@@ -1,9 +1,14 @@
 const express = require("express");
 const multer = require("multer");
+const cors = require('cors');
 const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(express.json());
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set up storage engine for multer
 const storage = multer.diskStorage({
@@ -17,8 +22,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Create the uploads directory if it doesn't exist
 const fs = require("fs");
