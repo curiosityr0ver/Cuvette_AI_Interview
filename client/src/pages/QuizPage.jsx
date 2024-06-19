@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import Question from "./Question";
 import styles from "./QuizPage.module.css";
-
-const questions = [
-	"What is your name?",
-	"How old are you?",
-	"What is your favorite programming language?",
-];
+import questions from "../data/questions";
 
 function QuizPage() {
 	const [currentQuestion, setCurrentQuestion] = useState(0);
