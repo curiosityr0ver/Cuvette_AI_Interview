@@ -3,7 +3,8 @@ const multer = require("multer");
 const cors = require('cors');
 require('dotenv').config();
 const path = require("path");
-const pdfExtrctorRoute = require('./controllers/pdfExtractorRoute');
+const pdfExtrctorRoute = require('./controllers/quizRoute');
+const IntroRoute = require('./controllers/IntroRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -42,11 +43,10 @@ app.post("/api/evaluation", upload.any(), (req, res) => {
     const size = req.files.reduce((acc, file) => acc + file.size, 0);
     res.json({ message: "Files uploaded successfully!", size });
 });
-
-
-
 app.use('/eval', pdfExtrctorRoute);
+app.use('/intro', IntroRoute);
 
 app.listen(port, () => {
+    console.clear();
     console.log(`Server running on port ${port}`);
 });

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./LandingPage.module.css";
+import submitIntro from "../api/submitIntro";
 
 const LandingPage = () => {
 	const [formData, setFormData] = useState({
@@ -30,7 +31,8 @@ const LandingPage = () => {
 			setError("Please provide either a LinkedIn profile or a resume.");
 		} else {
 			setError("");
-			navigate("/quiz");
+			submitIntro(formData);
+			// navigate("/quiz");
 		}
 	};
 
