@@ -1,19 +1,12 @@
 const express = require("express");
 const multer = require("multer");
 const cors = require('cors');
-<<<<<<< HEAD
 require('dotenv').config();
 const path = require("path");
 const pdfExtrctorRoute = require('./controllers/pdfExtractorRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
-=======
-const path = require("path");
-
-const app = express();
-const port = process.env.PORT || 5000;
->>>>>>> main
 
 app.use(express.json());
 app.use(cors());

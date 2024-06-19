@@ -1,8 +1,4 @@
 client/node_modules
-<<<<<<< HEAD
 client/.env
 server/node_modules
 server/.env
-=======
-server/node_modules
->>>>>>> main
