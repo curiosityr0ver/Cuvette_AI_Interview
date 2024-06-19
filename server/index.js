@@ -45,7 +45,7 @@ app.post("/api/evaluation", upload.any(), (req, res) => {
 
 
 
-app.use('/api/resume', pdfExtrctorRoute);
+app.use('/eval', pdfExtrctorRoute);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
