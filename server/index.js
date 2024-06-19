@@ -43,13 +43,10 @@ app.post("/api/evaluation", upload.any(), (req, res) => {
     res.json({ message: "Files uploaded successfully!", size });
 });
 
-<<<<<<< HEAD
 
 
 app.use('/api/resume', pdfExtrctorRoute);
 
-=======
->>>>>>> main
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
