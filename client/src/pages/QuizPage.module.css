@@ -1,81 +1,68 @@
-.container {
+.quizContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
 }
 
-.timer {
+.title {
+    text-align: center;
+    color: #333;
     margin-bottom: 20px;
 }
 
-.questionTimeline {
+.questionStates {
     display: flex;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
-.currentQuestion {
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     margin: 0 5px;
-    padding: 5px;
-    border: 1px solid;
-    background-color: yellow;
 }
 
-.skippedQuestion {
-    margin: 0 5px;
-    padding: 5px;
-    border: 1px solid;
-    background-color: #ffcc00;
-    /* yellow */
-}
-
-.answeredQuestion {
-    margin: 0 5px;
-    padding: 5px;
-    border: 1px solid;
-    background-color: green;
-}
-
-.notAttemptedQuestion {
-    margin: 0 5px;
-    padding: 5px;
-    border: 1px solid;
+.unattempted {
     background-color: white;
+    border: 1px solid black;
 }
 
-.questionContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.skipped {
+    background-color: yellow;
+    border: 1px solid black;
 }
 
-.recordingControls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.attempted {
+    background-color: green;
+    border: 1px solid black;
 }
 
-.completedContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.answerContainer {
+    text-align: center;
+}
+
+.subtitle {
+    color: #333;
     margin-top: 20px;
 }
 
-button {
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
+.answerList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.answerItem {
+    background-color: #fff;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #ddd;
-}
-
-button:active {
-    background-color: #ccc;
 }

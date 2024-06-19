@@ -1,200 +1,75 @@
-import React, { useState, useEffect } from "react";
-import { useReactMediaRecorder } from "react-media-recorder";
-import questions from "../data/questions"; // Importing questions from the data directory
-import axios from "axios";
+import React, { useState } from "react";
+import Question from "./Question";
 import styles from "./QuizPage.module.css";
 
-const QuizPage = () => {
+const questions = [
+	"What is your name?",
+	"How old are you?",
+	"What is your favorite programming language?",
+];
+
+function QuizPage() {
 	const [currentQuestion, setCurrentQuestion] = useState(0);
-	const [timeElapsed, setTimeElapsed] = useState(0);
-	const [recordedBlobs, setRecordedBlobs] = useState([]);
-	const [quizCompleted, setQuizCompleted] = useState(false);
+	const [questionStates, setQuestionStates] = useState(
+		Array(questions.length).fill("unattempted")
+	);
+	const [transcripts, setTranscripts] = useState(
+		Array(questions.length).fill("")
+	);
+	const [completed, setCompleted] = useState(false);
 
-	const { status, startRecording, stopRecording, mediaBlobUrl } =
-		useReactMediaRecorder({ audio: true });
+	const handleNext = (transcript, skipped) => {
+		const newStates = [...questionStates];
+		const newTranscripts = [...transcripts];
 
-	useEffect(() => {
-		const timer = setInterval(() => {
-			setTimeElapsed((prev) => prev + 1);
-		}, 1000);
-
-		return () => clearInterval(timer);
-	}, []);
-
-	const handleStartRecording = () => {
-		startRecording();
-	};
-
-	const handleStopRecording = async () => {
-		stopRecording();
-	};
-
-	useEffect(() => {
-		if (mediaBlobUrl) {
-			fetch(mediaBlobUrl)
-				.then((res) => res.blob())
-				.then((blob) => {
-					const updatedBlobs = [...recordedBlobs];
-					updatedBlobs[currentQuestion] = blob;
-					setRecordedBlobs(updatedBlobs);
-				});
-		}
-	}, [mediaBlobUrl]);
-
-	const handleNext = () => {
-		if (currentQuestion === questions.length - 1) {
-			setQuizCompleted(true);
-			submitQuiz();
+		if (skipped) {
+			newStates[currentQuestion] = "skipped";
 		} else {
-			setCurrentQuestion((prev) => prev + 1);
+			newStates[currentQuestion] = "attempted";
+			newTranscripts[currentQuestion] = transcript;
 		}
-	};
 
-	const handleSkip = () => {
-		if (currentQuestion === questions.length - 1) {
-			setQuizCompleted(true);
-			submitQuiz();
+		setQuestionStates(newStates);
+		setTranscripts(newTranscripts);
+
+		if (currentQuestion < questions.length - 1) {
+			setCurrentQuestion(currentQuestion + 1);
 		} else {
-			setRecordedBlobs((prevBlobs) => {
-				const updatedBlobs = [...prevBlobs];
-				updatedBlobs[currentQuestion] = "skipped";
-				return updatedBlobs;
-			});
-			setCurrentQuestion((prev) => prev + 1);
+			setCompleted(true);
 		}
 	};
-
-	const handleReRecord = () => {
-		setRecordedBlobs((prevBlobs) => {
-			const updatedBlobs = [...prevBlobs];
-			updatedBlobs[currentQuestion] = null;
-			return updatedBlobs;
-		});
-		startRecording(); // Automatically start recording again
-	};
-
-	const submitQuiz = async () => {
-		const formData = new FormData();
-		recordedBlobs.forEach((blob, index) => {
-			if (blob && blob !== "skipped") {
-				formData.append(
-					`question_${index + 1}`,
-					blob,
-					`question_${index + 1}.webm`
-				);
-			} else {
-				formData.append(`question_${index + 1}`, "skipped");
-			}
-		});
-
-		try {
-			const response = await axios.post(
-				"http://localhost:5000/api/evaluation",
-				formData,
-				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				}
-			);
-			console.log("Submission successful:", response.data);
-		} catch (error) {
-			console.error("Error submitting quiz:", error);
-		}
-	};
-
-	useEffect(() => {
-		console.log(recordedBlobs);
-	}, [recordedBlobs]);
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.timer}>
-				<span>Time Elapsed: {timeElapsed} seconds</span>
+		<div className={styles.quizContainer}>
+			<h1 className={styles.title}>Quiz</h1>
+			<div className={styles.questionStates}>
+				{questionStates.map((state, index) => (
+					<span
+						key={index}
+						className={`${styles.circle} ${styles[state]}`}
+					></span>
+				))}
 			</div>
-			{!quizCompleted && (
-				<div>
-					<div className={styles.questionTimeline}>
-						{questions.map((q, index) => (
-							<span
-								key={q.id}
-								className={
-									index === currentQuestion
-										? styles.currentQuestion
-										: recordedBlobs[index] === "skipped"
-										? styles.skippedQuestion
-										: recordedBlobs[index]
-										? styles.answeredQuestion
-										: styles.notAttemptedQuestion
-								}
-							>
-								{index + 1}
-							</span>
+			{!completed ? (
+				<Question
+					question={questions[currentQuestion]}
+					onNext={handleNext}
+					questionIndex={currentQuestion}
+				/>
+			) : (
+				<div className={styles.answerContainer}>
+					<h2 className={styles.subtitle}>All Answers</h2>
+					<ul className={styles.answerList}>
+						{questions.map((question, index) => (
+							<li key={index} className={styles.answerItem}>
+								<strong>{question}</strong>: {transcripts[index] || "Skipped"}
+							</li>
 						))}
-					</div>
-					<div className={styles.questionContainer}>
-						<h2>{questions[currentQuestion].text}</h2>
-						<div className={styles.recordingControls}>
-							{!recordedBlobs[currentQuestion] ||
-							recordedBlobs[currentQuestion] === "skipped" ? (
-								<div>
-									<div>
-										{status === "recording" ? (
-											<button onClick={handleStopRecording}>
-												Stop Recording
-											</button>
-										) : (
-											<button onClick={handleStartRecording}>
-												Start Recording
-											</button>
-										)}
-									</div>
-								</div>
-							) : (
-								<div>
-									<audio controls>
-										<source
-											src={URL.createObjectURL(recordedBlobs[currentQuestion])}
-											type="audio/webm"
-										/>
-										Your browser does not support the audio element.
-									</audio>
-									<button onClick={handleReRecord}>Re-record</button>
-								</div>
-							)}
-						</div>
-						<button onClick={handleNext}>Next</button>
-						<button onClick={handleSkip}>Skip</button>
-					</div>
-				</div>
-			)}
-			{quizCompleted && (
-				<div className={styles.completedContainer}>
-					<h2>Quiz Completed!</h2>
-					<button onClick={() => window.location.reload()}>Restart Quiz</button>
-					<div>
-						{recordedBlobs.map((blob, index) => (
-							<div key={index}>
-								{blob && blob !== "skipped" && (
-									<div>
-										<audio controls>
-											<source
-												src={URL.createObjectURL(blob)}
-												type="audio/webm"
-											/>
-											Your browser does not support the audio element.
-										</audio>
-									</div>
-								)}
-								{blob === "skipped" && <p>Question {index + 1} was skipped</p>}
-								{!blob && <p>Question {index + 1} was not attempted</p>}
-							</div>
-						))}
-					</div>
+					</ul>
 				</div>
 			)}
 		</div>
 	);
-};
+}
 
 export default QuizPage;

@@ -1,0 +1,77 @@
+.questionContainer {
+    text-align: center;
+}
+
+.questionText {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.recordContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.recordButton {
+    background-color: #007bff;
+    color: white;
+}
+
+.stopButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+.nextButton {
+    background-color: #28a745;
+    color: white;
+}
+
+.skipButton {
+    background-color: #ffc107;
+    color: black;
+}
+
+.transcript {
+    margin: 20px 0;
+    color: #555;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.recordIndicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    margin-left: 10px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

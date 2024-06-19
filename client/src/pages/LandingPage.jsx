@@ -32,7 +32,7 @@ const LandingPage = () => {
 		} else {
 			setError("");
 			submitIntro(formData);
-			// navigate("/quiz");
+			navigate("/quiz");
 		}
 	};
 
