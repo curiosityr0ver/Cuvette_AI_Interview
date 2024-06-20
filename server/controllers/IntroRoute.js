@@ -89,17 +89,4 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.get('/resume/:id', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-        res.set('Content-Type', user.resumeContentType);
-        res.status(200).send(user.resume);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
-});
-
 module.exports = router;
