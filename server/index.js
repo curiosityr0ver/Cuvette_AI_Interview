@@ -12,8 +12,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/intro', introRoute);
-app.use('/quiz', quizRoute);
+// app.use('/intro', introRoute);
+// app.use('/quiz', quizRoute);
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html')); // Handle client-side routing
 });
