@@ -2,7 +2,7 @@ const express = require('express');
 const { generateContent } = require('../utils/gemini_model');
 
 const router = express.Router();
-const answerPrompt = "you are a CTO of a company hiring fresher software dev, Rate the answers on a scale of 1-10, and give the response as an array of ratings";
+const answerPrompt = "Rate the answers on a scale of 1-10, and give the response as an array of ratings";
 
 async function askQuestion(question, answer) {
     const response = await generateContent(answerPrompt, question, answer);
