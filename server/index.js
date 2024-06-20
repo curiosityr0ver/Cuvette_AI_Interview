@@ -4,6 +4,7 @@ require('dotenv').config();
 const path = require("path");
 // const introRoute = require('./controllers/introRoute');
 // const quizRoute = require('./controllers/quizRoute');
+const sampleRoute = require('./controllers/sampleRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use('/intro', introRoute);
 // app.use('/quiz', quizRoute);
+app.use('/sample', sampleRoute);
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html')); // Handle client-side routing
 });
