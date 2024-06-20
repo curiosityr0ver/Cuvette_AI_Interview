@@ -70,23 +70,6 @@ router.post('/', upload.single('resume'), async (req, res) => {
     }
 });
 
-// GET route to fetch user data and resume
-router.get('/:id', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-        res.status(200).json({
-            _id: user._id,
-            name: user.fullName,
-            email: user.email,
-            technologies: user.technologies,
-            resume: `http://localhost:3000/resume/${user._id}`
-        });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
-});
+
 
 module.exports = router;
