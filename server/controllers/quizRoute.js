@@ -2,7 +2,7 @@ const express = require('express');
 const { generateContent } = require('../utils/gemini_model');
 
 const router = express.Router();
-const answerPrompt = "Rate the answer on a scale of 1-10, don't defend your answer, just rate it:";
+const answerPrompt = "you are a CTO of a company hiring fresher software dev, Rate the answers on a scale of 1-10, and give the response as an array of ratings";
 
 async function askQuestion(question, answer) {
     const response = await generateContent(answerPrompt, question, answer);
@@ -11,18 +11,20 @@ async function askQuestion(question, answer) {
 }
 
 async function askQuestions(questions, answers) {
-    const ratings = [];
-    for (let i = 0; i < questions.length; i++) {
-        const rating = await askQuestion(questions[i], answers[i]);
-        ratings.push(rating);
-    }
-    return Promise.all(ratings);
+    const ratings = await generateContent(answerPrompt, JSON.stringify({ questions, answers }));
+    return ratings.response.text();
 }
 
 router.post('/', async (req, res) => {
-    const { question, answer } = req.body;
-    const rating = await askQuestion(question, answer);
+    const { questions, answers } = req.body;
+    const rating = await askQuestion(questions, answers);
     res.json({ rating });
+});
+
+router.post('/batch', async (req, res) => {
+    const { questions, answers } = req.body;
+    const ratings = await askQuestions(questions, answers);
+    res.json(ratings);
 });
 
 module.exports = router;

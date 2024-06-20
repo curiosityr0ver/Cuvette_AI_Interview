@@ -33,15 +33,18 @@ const LandingPage = () => {
 		}
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (!formData.linkedin && !formData.resume) {
 			setError("Please provide either a LinkedIn profile or a resume.");
 		} else {
 			setError("");
-			submitIntro(formData);
-			localStorage.setItem("user", JSON.stringify(formData));
-			navigate("/quiz");
+			const response = await submitIntro(formData);
+			if (response.status === 201) {
+				console.log(response.data);
+				localStorage.setItem("user", JSON.stringify(formData));
+				// navigate("/quiz");
+			}
 		}
 	};
 

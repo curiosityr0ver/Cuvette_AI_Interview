@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     linkedin: { type: String },
     resume: { type: Buffer },
-    resumeContentType: { type: String, required: true }
+    resumeContentType: { type: String }
 });
 
 module.exports = mongoose.model('User', UserSchema);

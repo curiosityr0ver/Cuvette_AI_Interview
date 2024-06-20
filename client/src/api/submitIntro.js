@@ -8,7 +8,6 @@ const submitIntro = async (formData) => {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        console.log('Submission successful:', response.data);
         return response;
     } catch (error) {
         console.error('Error submitting quiz:', error);

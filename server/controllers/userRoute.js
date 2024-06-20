@@ -5,6 +5,8 @@ const { generateContent } = require('../utils/gemini_model');
 const pdfParse = require('pdf-parse');
 
 const router = express.Router();
+const prompt = "tell me which technologies out of these is the candidate most likely to know: [REACTJS, NODEJS, DBMS, EXPRESS, CLOUD, DEVOPS, ML, DATA ANALYTICS], only return an array";
+
 
 router.get('/', (req, res) => {
     res.send('Intro Route');
@@ -18,7 +20,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post('/', upload.single('resume'), async (req, res) => {
     try {
         const { email, phone, fullName, linkedin } = req.body;
-        const dataBuffer = req.file.buffer;
+        const dataBuffer = req?.file?.buffer;
         if (!linkedin && !req.file.buffer) {
             throw new Error('Please provide either LinkedIn or resume');
         }
@@ -46,7 +48,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
             linkedin,
             technologies,
             resume: dataBuffer,
-            resumeContentType: req.file.mimetype
+            resumeContentType: req?.file?.mimetype
         });
 
         await user.save();
