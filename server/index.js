@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require('cors');
 require('dotenv').config();
 const path = require("path");
-const introRoute = require('./controllers/introRoute');
-const quizRoute = require('./controllers/quizRoute');
+// const introRoute = require('./controllers/introRoute');
+// const quizRoute = require('./controllers/quizRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
