@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Question from "./Question";
 import styles from "./QuizPage.module.css";
 import questionsData from "../data/questions";
+import submitQuiz from "../api/submitQuiz";
 
 function QuizPage() {
 	const [questions, setQuestions] = useState([]);
@@ -10,10 +12,11 @@ function QuizPage() {
 	const [transcripts, setTranscripts] = useState([]);
 	const [completed, setCompleted] = useState(false);
 
+	const navigate = useNavigate();
+
 	useEffect(() => {
 		// Fetch questions from the data file
 		const fetchQuestions = async () => {
-			// Simulate a fetch call
 			const fetchedQuestions = questionsData;
 			setQuestions(fetchedQuestions);
 			setQuestionStates(Array(fetchedQuestions.length).fill("unattempted"));
@@ -42,6 +45,7 @@ function QuizPage() {
 			newStates[currentQuestion + 1] = "current";
 		} else {
 			setCompleted(true);
+			handleQuizCompletion(questions, newTranscripts);
 		}
 	};
 
@@ -52,6 +56,15 @@ function QuizPage() {
 			setQuestionStates(newStates);
 		}
 	}, [currentQuestion, questions]);
+
+	const handleQuizCompletion = async (questions, answers) => {
+		try {
+			const result = await submitQuiz(questions, answers);
+			navigate("/result", { state: { result: result.data } });
+		} catch (error) {
+			console.error("Failed to submit quiz:", error);
+		}
+	};
 
 	const handleRestart = () => {
 		setCurrentQuestion(0);

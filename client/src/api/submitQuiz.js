@@ -5,15 +5,11 @@ const submitQuiz = async (
     answers
 
 ) => {
-    const formData = new FormData();
-    formData.append('questions', JSON.stringify(questions));
-    formData.append('answers', JSON.stringify(answers));
 
     try {
-        const response = await axios.post('http://localhost:3000/quiz', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        const response = await axios.post('/quiz/batch', {
+            questions,
+            answers,
         });
         console.log('Submission successful:', response.data);
         return response;

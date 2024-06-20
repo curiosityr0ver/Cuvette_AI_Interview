@@ -43,7 +43,7 @@ const LandingPage = () => {
 			if (response.status === 201) {
 				console.log(response.data);
 				localStorage.setItem("user", JSON.stringify(formData));
-				// navigate("/quiz");
+				navigate("/quiz");
 			}
 		}
 	};
