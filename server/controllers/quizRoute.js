@@ -6,7 +6,7 @@ const answerPrompt = "Rate the answers on a scale of 1-10, and give the response
 
 async function askQuestion(question, answer) {
     const response = await generateContent(answerPrompt, question, answer);
-    const finRes = response.response.text().split(' ')[0];
+    const finRes = response.response.text().split(' ');
     return parseInt(finRes);
 }
 
