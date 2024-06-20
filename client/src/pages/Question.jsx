@@ -1,17 +1,21 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./Question.module.css";
 
-function Question({ question, onNext, questionIndex }) {
+function Question({ question, onNext, transcript, setTranscript }) {
 	const [isRecording, setIsRecording] = useState(false);
-	const [transcript, setTranscript] = useState("");
+	const [isRecognitionReady, setIsRecognitionReady] = useState(true);
 	const recognitionRef = useRef(null);
 
 	const startRecording = () => {
+		if (!isRecognitionReady) return;
+
 		setIsRecording(true);
 		recognitionRef.current.start();
 	};
 
 	const stopRecording = () => {
+		if (!isRecording) return;
+
 		setIsRecording(false);
 		recognitionRef.current.stop();
 	};
@@ -24,33 +28,37 @@ function Question({ question, onNext, questionIndex }) {
 		}
 	};
 
-	if (!("webkitSpeechRecognition" in window)) {
-		alert(
-			"Web Speech API is not supported by this browser. Please use Google Chrome."
-		);
-	} else {
-		const SpeechRecognition =
-			window.webkitSpeechRecognition || window.SpeechRecognition;
-		recognitionRef.current = new SpeechRecognition();
-		recognitionRef.current.continuous = false;
-		recognitionRef.current.interimResults = false;
-		recognitionRef.current.lang = "en-US";
+	useEffect(() => {
+		if (!("webkitSpeechRecognition" in window)) {
+			alert(
+				"Web Speech API is not supported by this browser. Please use Google Chrome."
+			);
+		} else {
+			const SpeechRecognition =
+				window.webkitSpeechRecognition || window.SpeechRecognition;
+			recognitionRef.current = new SpeechRecognition();
+			recognitionRef.current.continuous = false;
+			recognitionRef.current.interimResults = false;
+			recognitionRef.current.lang = "en-US";
 
-		recognitionRef.current.onresult = (event) => {
-			const lastResult = event.results.length - 1;
-			const transcript = event.results[lastResult][0].transcript;
-			setTranscript(transcript);
-		};
+			recognitionRef.current.onresult = (event) => {
+				const lastResult = event.results.length - 1;
+				const transcript = event.results[lastResult][0].transcript;
+				setTranscript(transcript);
+			};
 
-		recognitionRef.current.onerror = (event) => {
-			console.error("Speech recognition error", event);
-			setIsRecording(false);
-		};
+			recognitionRef.current.onerror = (event) => {
+				console.error("Speech recognition error", event);
+				setIsRecording(false);
+				setIsRecognitionReady(true);
+			};
 
-		recognitionRef.current.onend = () => {
-			setIsRecording(false);
-		};
-	}
+			recognitionRef.current.onend = () => {
+				setIsRecording(false);
+				setIsRecognitionReady(true);
+			};
+		}
+	}, [setTranscript]);
 
 	const handleNext = () => {
 		onNext(transcript, !transcript);
@@ -59,6 +67,11 @@ function Question({ question, onNext, questionIndex }) {
 	const handleSkip = () => {
 		onNext("", true);
 	};
+
+	useEffect(() => {
+		setIsRecording(false);
+		setIsRecognitionReady(true);
+	}, [question]);
 
 	return (
 		<div className={styles.questionContainer}>

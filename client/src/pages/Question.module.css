@@ -1,8 +1,11 @@
 .questionContainer {
     text-align: center;
+    width: 100%;
 }
 
 .questionText {
+    font-size: 20px;
+    font-weight: 500;
     color: #333;
     margin-bottom: 20px;
 }
@@ -16,48 +19,71 @@
 
 .button {
     padding: 10px 20px;
-    margin: 5px;
+    margin: 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 500;
 }
 
 .recordButton {
-    background-color: #007bff;
+    background-color: #007aff;
     color: white;
+    transition: background-color 0.3s ease;
+}
+
+.recordButton:hover {
+    background-color: #005bb5;
 }
 
 .stopButton {
-    background-color: #dc3545;
+    background-color: #ff3b30;
     color: white;
+    transition: background-color 0.3s ease;
+}
+
+.stopButton:hover {
+    background-color: #c62f1f;
 }
 
 .nextButton {
-    background-color: #28a745;
+    background-color: #4cd964;
     color: white;
+    transition: background-color 0.3s ease;
+}
+
+.nextButton:hover {
+    background-color: #3aa74d;
 }
 
 .skipButton {
-    background-color: #ffc107;
+    background-color: #ffcc00;
     color: black;
+    transition: background-color 0.3s ease;
+}
+
+.skipButton:hover {
+    background-color: #d4a800;
 }
 
 .transcript {
     margin: 20px 0;
+    font-size: 16px;
     color: #555;
 }
 
 .buttonContainer {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .recordIndicator {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: red;
+    background-color: #ff3b30;
     margin-left: 10px;
     animation: pulse 1s infinite;
 }

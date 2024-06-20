@@ -1,62 +1,28 @@
 const express = require('express');
-const multer = require('multer');
-const pdfParse = require('pdf-parse');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-
+const { generateContent } = require('../utils/gemini_model');
 
 const router = express.Router();
-const apiKey = process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash-latest",
-});
-
-const prompt = "Extract the technologies mentioned in the given parsed text as an array of strings: ";
 const answerPrompt = "Rate the answer on a scale of 1-10, don't defend your answer, just rate it:";
 
-async function parseResume(resume) {
-    try {
-        const result = await model.generateContent([prompt, resume]);
-        const rawData = result;
-        return result;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 async function askQuestion(question, answer) {
-    try {
-        const result = await model.generateContent([answerPrompt, question, answer]);
-        const rawData = result.response.text();
-        return parseInt(rawData);
-    } catch (error) {
-        console.error(error);
-    }
+    const response = await generateContent(answerPrompt, question, answer);
+    const finRes = response.response.text().split(' ')[0];
+    return parseInt(finRes);
 }
 
-// Set up Multer for file uploads in memory
-const upload = multer({ storage: multer.memoryStorage() });
-
-// Route handler for extracting text from PDF
-router.post('/', upload.single('resume'), async (req, res) => {
-    try {
-        const dataBuffer = req.file.buffer;
-        const data = await pdfParse(dataBuffer);
-
-        const text = data.text;
-        const technologies = await parseResume(text);
-        res.json({ technologies });
-    } catch (error) {
-        res.status(500).json({ error: 'Error processing PDF' });
+async function askQuestions(questions, answers) {
+    const ratings = [];
+    for (let i = 0; i < questions.length; i++) {
+        const rating = await askQuestion(questions[i], answers[i]);
+        ratings.push(rating);
     }
-});
+    return Promise.all(ratings);
+}
 
-
-router.post('/question', async (req, res) => {
+router.post('/', async (req, res) => {
     const { question, answer } = req.body;
     const rating = await askQuestion(question, answer);
     res.json({ rating });
-}
-);
+});
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./LandingPage.module.css";
 import submitIntro from "../api/submitIntro";
@@ -16,6 +16,14 @@ const LandingPage = () => {
 
 	const navigate = useNavigate();
 
+	useEffect(() => {
+		const user = JSON.parse(localStorage.getItem("user"));
+		if (user) {
+			console.log(user);
+			setFormData(user);
+		}
+	}, []);
+
 	const handleChange = (e) => {
 		const { name, value, files } = e.target;
 		if (name === "resume") {
@@ -32,6 +40,7 @@ const LandingPage = () => {
 		} else {
 			setError("");
 			submitIntro(formData);
+			localStorage.setItem("user", JSON.stringify(formData));
 			navigate("/quiz");
 		}
 	};
@@ -44,6 +53,7 @@ const LandingPage = () => {
 					type="email"
 					name="email"
 					placeholder="Email"
+					value={formData.email}
 					onChange={handleChange}
 					required
 					className={styles.input}
@@ -52,6 +62,7 @@ const LandingPage = () => {
 					type="tel"
 					name="phone"
 					placeholder="Phone"
+					value={formData.phone}
 					onChange={handleChange}
 					required
 					className={styles.input}
@@ -60,6 +71,7 @@ const LandingPage = () => {
 					type="text"
 					name="fullName"
 					placeholder="Full Name"
+					value={formData.fullName}
 					onChange={handleChange}
 					required
 					className={styles.input}
@@ -68,6 +80,7 @@ const LandingPage = () => {
 					type="url"
 					name="linkedin"
 					placeholder="LinkedIn Profile"
+					value={formData.linkedin}
 					onChange={handleChange}
 					className={styles.input}
 				/>
