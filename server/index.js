@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require('cors');
 require('dotenv').config();
 const path = require("path");
-// const introRoute = require('./controllers/introRoute');
+const introRoute = require('./controllers/introRoute');
 const quizRoute = require('./controllers/quizRoute');
 const sampleRoute = require('./controllers/sampleRoute');
 
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/intro', introRoute);
+app.use('/intro', introRoute);
 app.use('/quiz', quizRoute);
 app.use('/sample', sampleRoute);
 
