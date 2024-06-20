@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+/* eslint-disable react/prop-types */
+import { useState, useRef, useEffect } from "react";
 import styles from "./Question.module.css";
 
 function Question({ question, onNext, transcript, setTranscript }) {

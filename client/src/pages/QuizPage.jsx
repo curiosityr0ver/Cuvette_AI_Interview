@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Question from "./Question";
 import styles from "./QuizPage.module.css";
 import questionsData from "../data/questions";
