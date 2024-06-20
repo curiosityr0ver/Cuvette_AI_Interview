@@ -1,20 +1,12 @@
 const express = require('express');
 const multer = require('multer');
 const User = require('../model/User');
-const mongoose = require('mongoose');
 const { generateContent } = require('../utils/gemini_model');
 const pdfParse = require('pdf-parse');
 
 const router = express.Router();
 
 const prompt = "tell me which technologies out of these is the candidate most likely to know: [REACTJS, NODEJS, DBMS, EXPRESS, CLOUD, DEVOPS, ML, DATA ANALYTICS], only return an array";
-
-
-// Mongo URI
-const mongoURI = process.env.MONGO_URI;
-
-// Create mongo connection
-mongoose.connect(mongoURI);
 
 
 // Multer storage configuration
