@@ -29,4 +29,10 @@ router.post('/batch', async (req, res) => {
     res.json(ratings);
 });
 
+router.post('/dev', async (req, res) => {
+    const { prompt, questions, answers } = req.body;
+    const response = await generateContent(prompt, JSON.stringify({ questions, answers }));
+    res.json({ response });
+});
+
 module.exports = router;
