@@ -67,7 +67,8 @@
 .questionTitle,
 .answerTitle,
 .ratingTitle,
-.remarkTitle {
+.remarkTitle,
+.timeTitle {
     font-size: 18px;
     font-weight: 600;
     color: #007aff;
@@ -77,7 +78,8 @@
 .question,
 .answer,
 .rating,
-.remark {
+.remark,
+.time {
     font-size: 16px;
     color: #333;
     margin-bottom: 10px;

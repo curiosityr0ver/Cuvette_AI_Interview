@@ -1,10 +1,15 @@
 import axios from 'axios';
 
-const submitQuiz = async (questions, answers) => {
 
+const ENV = import.meta.env.VITE_ENV || "prod";
+const SERVER_ORIGIN = ENV === "dev" ? "http://localhost:3000" : "";
+
+
+const submitQuiz = async (questions, answers) => {
+    console.log(SERVER_ORIGIN);
     try {
         console.log('Submitting quiz:', questions, answers);
-        const response = await axios.post('/quiz/batch', {
+        const response = await axios.post(`${SERVER_ORIGIN}/quiz/batch`, {
             questions,
             answers,
         });

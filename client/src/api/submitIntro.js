@@ -1,13 +1,13 @@
 import axios from 'axios';
 
 
-const ENV = import.meta.VITE_ENV || "development";
-const SERVER_ORIGIN = ENV === "development" ? "http://localhost:3000" : "";
+const ENV = import.meta.env.VITE_ENV || "prod";
+const SERVER_ORIGIN = ENV === "dev" ? "http://localhost:3000" : "";
 
 const submitIntro = async (formData) => {
 
     try {
-        const response = await axios.post('/intro', formData, {
+        const response = await axios.post(`${SERVER_ORIGIN}/intro`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

@@ -5,10 +5,11 @@ import styles from "./ResultPage.module.css";
 const ResultPage = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { result, questions, answers } = location.state || {
-		result: [],
+	const { result, questions, answers, times } = location.state || {
+		result: null,
 		questions: [],
 		answers: [],
+		times: [],
 	};
 
 	useEffect(() => {
@@ -16,8 +17,9 @@ const ResultPage = () => {
 			result,
 			questions,
 			answers,
+			times,
 		});
-	}, [result, questions, answers]);
+	}, [result, questions, answers, times]);
 
 	const getColorForRating = (rating) => {
 		if (rating >= 8) {
@@ -50,6 +52,12 @@ const ResultPage = () => {
 							<p className={styles.answer}>{answers[index]}</p>
 							<h3 className={styles.ratingTitle}>Rating:</h3>
 							<p className={styles.rating}>{res}/10</p>
+							<h3 className={styles.remarkTitle}>Remark:</h3>
+							<p className={styles.remark}>{res.remark}</p>
+							<h3 className={styles.timeTitle}>Time Taken:</h3>
+							<p className={styles.time}>
+								{(times[index] / 1000).toFixed(2)} seconds
+							</p>
 						</li>
 					))}
 				</ul>
