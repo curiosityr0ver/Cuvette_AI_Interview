@@ -6,7 +6,7 @@ const ResultPage = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { result, questions, answers } = location.state || {
-		result: null,
+		result: [],
 		questions: [],
 		answers: [],
 	};
@@ -50,8 +50,6 @@ const ResultPage = () => {
 							<p className={styles.answer}>{answers[index]}</p>
 							<h3 className={styles.ratingTitle}>Rating:</h3>
 							<p className={styles.rating}>{res}/10</p>
-							<h3 className={styles.remarkTitle}>Remark:</h3>
-							<p className={styles.remark}>{res.remark}</p>
 						</li>
 					))}
 				</ul>

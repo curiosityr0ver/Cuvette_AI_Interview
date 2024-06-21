@@ -4,7 +4,7 @@ const submitQuiz = async (questions, answers) => {
 
     try {
         console.log('Submitting quiz:', questions, answers);
-        const response = await axios.post('http://localhost:3000/quiz/batch', {
+        const response = await axios.post('/quiz/batch', {
             questions,
             answers,
         });

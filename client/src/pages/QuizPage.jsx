@@ -105,7 +105,10 @@ function QuizPage() {
 					/>
 				)
 			) : (
-				<div>Loading</div>
+				<div className={styles.loadingContainer}>
+					<div className={styles.loading}></div>
+					<p className={styles.loadingText}>Loading...</p>
+				</div>
 			)}
 		</div>
 	);
