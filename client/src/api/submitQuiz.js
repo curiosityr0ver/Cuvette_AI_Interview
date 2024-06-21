@@ -1,13 +1,10 @@
 import axios from 'axios';
 
-const submitQuiz = async (
-    questions,
-    answers
-
-) => {
+const submitQuiz = async (questions, answers) => {
 
     try {
-        const response = await axios.post('/quiz/batch', {
+        console.log('Submitting quiz:', questions, answers);
+        const response = await axios.post('http://localhost:3000/quiz/batch', {
             questions,
             answers,
         });

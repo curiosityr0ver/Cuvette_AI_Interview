@@ -60,7 +60,13 @@ function QuizPage() {
 	const handleQuizCompletion = async (questions, answers) => {
 		try {
 			const result = await submitQuiz(questions, answers);
-			navigate("/result", { state: { result: result.data } });
+			navigate("/result", {
+				state: {
+					result: result.data.answers,
+					questions: questions,
+					answers: answers,
+				},
+			});
 		} catch (error) {
 			console.error("Failed to submit quiz:", error);
 		}
@@ -99,22 +105,7 @@ function QuizPage() {
 					/>
 				)
 			) : (
-				<div className={styles.answerContainer}>
-					<h2 className={styles.subtitle}>All Answers</h2>
-					<ul className={styles.answerList}>
-						{questions.map((question, index) => (
-							<li key={index} className={styles.answerItem}>
-								<strong>{question}</strong>: {transcripts[index] || "Skipped"}
-							</li>
-						))}
-					</ul>
-					<button
-						onClick={handleRestart}
-						className={`${styles.button} ${styles.restartButton}`}
-					>
-						Restart Quiz
-					</button>
-				</div>
+				<div>Loading</div>
 			)}
 		</div>
 	);
