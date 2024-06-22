@@ -11,8 +11,7 @@ function QuizPage() {
 	const [questionStates, setQuestionStates] = useState([]);
 	const [transcripts, setTranscripts] = useState([]);
 	const [completed, setCompleted] = useState(false);
-	const [startTime, setStartTime] = useState(null);
-	const [times, setTimes] = useState([]);
+	const [isRecording, setIsRecording] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -23,17 +22,12 @@ function QuizPage() {
 			setQuestions(fetchedQuestions);
 			setQuestionStates(Array(fetchedQuestions.length).fill("unattempted"));
 			setTranscripts(Array(fetchedQuestions.length).fill(""));
-			setStartTime(Date.now());
 		};
 
 		fetchQuestions();
 	}, []);
 
 	const handleNext = (transcript, skipped) => {
-		const endTime = Date.now();
-		const timeTaken = endTime - startTime;
-		const newTimes = [...times, timeTaken];
-
 		const newStates = [...questionStates];
 		const newTranscripts = [...transcripts];
 
@@ -46,15 +40,13 @@ function QuizPage() {
 
 		setQuestionStates(newStates);
 		setTranscripts(newTranscripts);
-		setTimes(newTimes);
 
 		if (currentQuestion < questions.length - 1) {
 			setCurrentQuestion(currentQuestion + 1);
 			newStates[currentQuestion + 1] = "current";
-			setStartTime(Date.now());
 		} else {
 			setCompleted(true);
-			handleQuizCompletion(questions, newTranscripts, newTimes);
+			handleQuizCompletion(questions, newTranscripts);
 		}
 	};
 
@@ -66,7 +58,7 @@ function QuizPage() {
 		}
 	}, [currentQuestion, questions]);
 
-	const handleQuizCompletion = async (questions, answers, times) => {
+	const handleQuizCompletion = async (questions, answers) => {
 		try {
 			const result = await submitQuiz(questions, answers);
 			navigate("/result", {
@@ -74,7 +66,6 @@ function QuizPage() {
 					result: result.data.answers,
 					questions: questions,
 					answers: answers,
-					times: times,
 				},
 			});
 		} catch (error) {
@@ -86,9 +77,21 @@ function QuizPage() {
 		setCurrentQuestion(0);
 		setQuestionStates(Array(questions.length).fill("unattempted"));
 		setTranscripts(Array(questions.length).fill(""));
-		setTimes([]);
 		setCompleted(false);
-		setStartTime(Date.now());
+	};
+
+	const handleRecordingStart = () => {
+		setIsRecording(true);
+	};
+
+	const handleRecordingStop = () => {
+		setIsRecording(false);
+	};
+
+	const handleTranscript = (transcript) => {
+		const newTranscripts = [...transcripts];
+		newTranscripts[currentQuestion] = transcript;
+		setTranscripts(newTranscripts);
 	};
 
 	return (
@@ -104,17 +107,18 @@ function QuizPage() {
 			</div>
 			{!completed ? (
 				questions.length > 0 && (
-					<Question
-						question={questions[currentQuestion]}
-						onNext={handleNext}
-						questionIndex={currentQuestion}
-						transcript={transcripts[currentQuestion]}
-						setTranscript={(transcript) => {
-							const newTranscripts = [...transcripts];
-							newTranscripts[currentQuestion] = transcript;
-							setTranscripts(newTranscripts);
-						}}
-					/>
+					<div>
+						<Question
+							question={questions[currentQuestion]}
+							onNext={handleNext}
+							questionIndex={currentQuestion}
+							transcript={transcripts[currentQuestion]}
+							setTranscript={handleTranscript}
+							onRecordingStart={handleRecordingStart}
+							onRecordingStop={handleRecordingStop}
+							isRecording={isRecording}
+						/>
+					</div>
 				)
 			) : (
 				<div className={styles.loadingContainer}>

@@ -1,28 +1,35 @@
-/* eslint-disable react/prop-types */
-import { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styles from "./Question.module.css";
 
-function Question({ question, onNext, transcript, setTranscript }) {
-	const [isRecording, setIsRecording] = useState(false);
-	const [isRecognitionReady, setIsRecognitionReady] = useState(true);
+function Question({
+	question,
+	onNext,
+	transcript,
+	setTranscript,
+	onRecordingStart,
+	onRecordingStop,
+	isRecording,
+}) {
 	const recognitionRef = useRef(null);
+	const [isRecognizing, setIsRecognizing] = useState(false);
 
 	const startRecording = () => {
-		if (!isRecognitionReady) return;
-
-		setIsRecording(true);
-		recognitionRef.current.start();
+		if (recognitionRef.current) {
+			onRecordingStart();
+			recognitionRef.current.start();
+			setIsRecognizing(true);
+		}
 	};
 
 	const stopRecording = () => {
-		if (!isRecording) return;
-
-		setIsRecording(false);
-		recognitionRef.current.stop();
+		if (recognitionRef.current) {
+			recognitionRef.current.stop();
+			setIsRecognizing(false);
+		}
 	};
 
 	const handleToggleRecording = () => {
-		if (isRecording) {
+		if (isRecognizing) {
 			stopRecording();
 		} else {
 			startRecording();
@@ -30,49 +37,47 @@ function Question({ question, onNext, transcript, setTranscript }) {
 	};
 
 	useEffect(() => {
-		if (!("webkitSpeechRecognition" in window)) {
+		if (
+			!("webkitSpeechRecognition" in window) &&
+			!("SpeechRecognition" in window)
+		) {
 			alert(
 				"Web Speech API is not supported by this browser. Please use Google Chrome."
 			);
-		} else {
-			const SpeechRecognition =
-				window.webkitSpeechRecognition || window.SpeechRecognition;
-			recognitionRef.current = new SpeechRecognition();
-			recognitionRef.current.continuous = false;
-			recognitionRef.current.interimResults = false;
-			recognitionRef.current.lang = "en-US";
-
-			recognitionRef.current.onresult = (event) => {
-				const lastResult = event.results.length - 1;
-				const transcript = event.results[lastResult][0].transcript;
-				setTranscript(transcript);
-			};
-
-			recognitionRef.current.onerror = (event) => {
-				console.error("Speech recognition error", event);
-				setIsRecording(false);
-				setIsRecognitionReady(true);
-			};
-
-			recognitionRef.current.onend = () => {
-				setIsRecording(false);
-				setIsRecognitionReady(true);
-			};
+			return;
 		}
-	}, [setTranscript]);
 
-	const handleNext = () => {
-		onNext(transcript, !transcript);
-	};
+		const SpeechRecognition =
+			window.webkitSpeechRecognition || window.SpeechRecognition;
+		recognitionRef.current = new SpeechRecognition();
+		recognitionRef.current.continuous = true;
+		recognitionRef.current.interimResults = false;
+		recognitionRef.current.lang = "en-US";
 
-	const handleSkip = () => {
-		onNext("", true);
-	};
+		recognitionRef.current.onresult = (event) => {
+			const lastResult = event.results.length - 1;
+			const newTranscript = event.results[lastResult][0].transcript;
+			setTranscript(newTranscript);
+		};
 
-	useEffect(() => {
-		setIsRecording(false);
-		setIsRecognitionReady(true);
-	}, [question]);
+		recognitionRef.current.onerror = (event) => {
+			console.error("Speech recognition error", event);
+			onRecordingStop();
+			setIsRecognizing(false);
+		};
+
+		recognitionRef.current.onend = () => {
+			onRecordingStop();
+			setIsRecognizing(false);
+		};
+
+		return () => {
+			if (recognitionRef.current) {
+				recognitionRef.current.stop();
+				recognitionRef.current = null;
+			}
+		};
+	}, [setTranscript, onRecordingStop]);
 
 	return (
 		<div className={styles.questionContainer}>
@@ -90,18 +95,20 @@ function Question({ question, onNext, transcript, setTranscript }) {
 						? "Re-record"
 						: "Start Recording"}
 				</button>
-				{isRecording && <div className={styles.recordIndicator}></div>}
+				{isRecognizing && <div className={styles.recordIndicator}></div>}
 			</div>
-			<p className={styles.transcript}>Transcript: {transcript}</p>
+			{transcript && !isRecognizing && (
+				<p className={styles.transcript}>Transcript: {transcript}</p>
+			)}
 			<div className={styles.buttonContainer}>
 				<button
-					onClick={handleNext}
+					onClick={() => onNext(transcript, false)}
 					className={`${styles.button} ${styles.nextButton}`}
 				>
 					Next
 				</button>
 				<button
-					onClick={handleSkip}
+					onClick={() => onNext("", true)}
 					className={`${styles.button} ${styles.skipButton}`}
 				>
 					Skip
