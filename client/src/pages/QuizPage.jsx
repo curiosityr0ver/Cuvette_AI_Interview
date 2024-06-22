@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Question from "./Question";
 import questionsData from "../data/questions";
 import submitQuiz from "../api/submitQuiz";
+import Footer from "./Footer";
 import styles from "./QuizPage.module.css";
 
 function QuizPage() {
@@ -170,6 +171,7 @@ function QuizPage() {
 					<p className={styles.loadingText}>Loading...</p>
 				</div>
 			)}
+			<Footer />
 		</div>
 	);
 }

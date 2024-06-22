@@ -116,13 +116,21 @@ function Question({
 			<div className={styles.buttonContainer}>
 				<button
 					onClick={() => onNext(transcript, false)}
-					className={`${styles.button} ${styles.nextButton}`}
+					className={`${styles.button}
+						 ${styles.nextButton}
+						 ${!transcript || isRecognizing ? styles.disabled : ""}
+						 `}
+					disabled={!transcript || isRecognizing}
 				>
 					Next
 				</button>
 				<button
 					onClick={() => onNext("", true)}
-					className={`${styles.button} ${styles.skipButton}`}
+					className={`${styles.button}
+						 ${styles.skipButton}
+						 ${!transcript || isRecognizing ? styles.disabled : ""}
+						 `}
+					disabled={!transcript || isRecognizing}
 				>
 					Skip
 				</button>

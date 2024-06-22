@@ -79,3 +79,9 @@ h1 {
 .submitButton:hover {
     background-color: #005bb5;
 }
+
+.footer {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+}

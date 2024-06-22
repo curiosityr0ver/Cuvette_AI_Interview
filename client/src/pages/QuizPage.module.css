@@ -1,15 +1,17 @@
 .quizContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
     border: 1px solid #e0e0e0;
     border-radius: 20px;
     background-color: #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    max-width: 80vw;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .title {
@@ -31,23 +33,27 @@
     height: 20px;
     border-radius: 50%;
     margin: 0 5px;
-    background-color: #e0e0e0;
 }
 
 .unattempted {
-    background-color: #e0e0e0;
+    background-color: white;
+    border: 2px solid #d3d3d3;
 }
 
 .skipped {
-    background-color: #ffeb3b;
+    background-color: yellow;
+    border: 2px solid #d3d3d3;
 }
 
 .attempted {
-    background-color: #4caf50;
+    background-color: green;
+    border: 2px solid #d3d3d3;
 }
 
-.current {
-    background-color: #2196f3;
+.timer {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
 .loadingContainer {
@@ -57,12 +63,12 @@
 }
 
 .loading {
-    border: 8px solid #f3f3f3;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
     border-radius: 50%;
-    border-top: 8px solid #3498db;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
@@ -76,7 +82,7 @@
 }
 
 .loadingText {
-    margin-top: 10px;
-    font-size: 18px;
-    color: #555;
+    font-size: 20px;
+    margin-top: 20px;
+    text-align: center;
 }

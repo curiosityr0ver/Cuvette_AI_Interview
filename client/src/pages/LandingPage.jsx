@@ -103,6 +103,9 @@ const LandingPage = () => {
 					Submit
 				</button>
 			</form>
+			<footer className={styles.footer}>
+				<p>This application is in beta. Please be kind. 😊</p>
+			</footer>
 		</div>
 	);
 };

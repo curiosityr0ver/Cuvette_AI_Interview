@@ -1,0 +1,22 @@
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.link {
+    text-decoration: none;
+    color: #0073e6;
+    font-weight: bold;
+}
