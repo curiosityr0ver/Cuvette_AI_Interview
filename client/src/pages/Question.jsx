@@ -58,6 +58,7 @@ function Question({
 			const lastResult = event.results.length - 1;
 			const newTranscript = event.results[lastResult][0].transcript;
 			setTranscript(newTranscript);
+			stopRecording(); // Ensure to stop recording after receiving a result
 		};
 
 		recognitionRef.current.onerror = (event) => {
@@ -78,6 +79,36 @@ function Question({
 			}
 		};
 	}, [setTranscript, onRecordingStop]);
+
+	useEffect(() => {
+		// Ensure recognition instance is correctly initialized on remount
+		if (recognitionRef.current) {
+			recognitionRef.current.abort();
+		}
+		recognitionRef.current = new (window.webkitSpeechRecognition ||
+			window.SpeechRecognition)();
+		recognitionRef.current.continuous = false;
+		recognitionRef.current.interimResults = false;
+		recognitionRef.current.lang = "en-US";
+
+		recognitionRef.current.onresult = (event) => {
+			const lastResult = event.results.length - 1;
+			const newTranscript = event.results[lastResult][0].transcript;
+			setTranscript(newTranscript);
+			stopRecording(); // Ensure to stop recording after receiving a result
+		};
+
+		recognitionRef.current.onerror = (event) => {
+			console.error("Speech recognition error", event);
+			onRecordingStop();
+			setIsRecognizing(false);
+		};
+
+		recognitionRef.current.onend = () => {
+			onRecordingStop();
+			setIsRecognizing(false);
+		};
+	}, [setTranscript, onRecordingStop, stopRecording]);
 
 	return (
 		<div className={styles.questionContainer}>

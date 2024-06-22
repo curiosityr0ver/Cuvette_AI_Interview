@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Question from "./Question";
-import styles from "./QuizPage.module.css";
 import questionsData from "../data/questions";
 import submitQuiz from "../api/submitQuiz";
+import styles from "./QuizPage.module.css";
 
 function QuizPage() {
 	const [questions, setQuestions] = useState([]);
@@ -40,6 +40,7 @@ function QuizPage() {
 
 		setQuestionStates(newStates);
 		setTranscripts(newTranscripts);
+		setIsRecording(false);
 
 		if (currentQuestion < questions.length - 1) {
 			setCurrentQuestion(currentQuestion + 1);
@@ -109,6 +110,7 @@ function QuizPage() {
 				questions.length > 0 && (
 					<div>
 						<Question
+							key={currentQuestion} // Force re-render
 							question={questions[currentQuestion]}
 							onNext={handleNext}
 							questionIndex={currentQuestion}
