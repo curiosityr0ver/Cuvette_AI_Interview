@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 
-const ENV = import.meta.env.VITE_ENV || "prod";
+
 const SERVER_ORIGIN = "";
+const SERVER_ORIGIN_DEV = "http://localhost:3000";
 
 
 const submitQuiz = async (questions, answers) => {

@@ -12,6 +12,8 @@ function Question({
 }) {
 	const recognitionRef = useRef(null);
 	const [isRecognizing, setIsRecognizing] = useState(false);
+	const [startTime, setStartTime] = useState(null);
+	const [timeToSpeak, setTimeToSpeak] = useState(null);
 
 	const startRecording = () => {
 		if (recognitionRef.current) {
@@ -23,8 +25,10 @@ function Question({
 
 	const stopRecording = () => {
 		if (recognitionRef.current) {
+			recognitionRef.current.onend = null; // Temporarily remove the onend handler
 			recognitionRef.current.stop();
 			setIsRecognizing(false);
+			onRecordingStop();
 		}
 	};
 
@@ -33,6 +37,10 @@ function Question({
 			stopRecording();
 		} else {
 			startRecording();
+			const endTime = Date.now();
+			const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+			console.log(`Time taken before starting to speak: ${timeTaken} seconds`);
+			setTimeToSpeak(timeTaken);
 		}
 	};
 
@@ -62,13 +70,11 @@ function Question({
 
 		recognitionRef.current.onerror = (event) => {
 			console.error("Speech recognition error", event);
-			onRecordingStop();
-			setIsRecognizing(false);
+			stopRecording();
 		};
 
 		recognitionRef.current.onend = () => {
-			onRecordingStop();
-			setIsRecognizing(false);
+			stopRecording();
 		};
 
 		return () => {
@@ -78,6 +84,10 @@ function Question({
 			}
 		};
 	}, [setTranscript, onRecordingStop]);
+
+	useEffect(() => {
+		setStartTime(Date.now());
+	}, [question]);
 
 	return (
 		<div className={styles.questionContainer}>
@@ -98,7 +108,10 @@ function Question({
 				{isRecognizing && <div className={styles.recordIndicator}></div>}
 			</div>
 			{transcript && !isRecognizing && (
-				<p className={styles.transcript}>Transcript: {transcript}</p>
+				<p className={styles.transcript}>
+					Transcript: {transcript} <br />
+					Time taken before speaking: {timeToSpeak} seconds
+				</p>
 			)}
 			<div className={styles.buttonContainer}>
 				<button

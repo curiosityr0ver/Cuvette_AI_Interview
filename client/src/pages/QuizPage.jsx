@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Question from "./Question";
 import questionsData from "../data/questions";
@@ -13,12 +13,12 @@ function QuizPage() {
 	const [completed, setCompleted] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
 	const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+	const [startTime, setStartTime] = useState(Date.now());
+	const [timeTaken, setTimeTaken] = useState([]); // Time taken for each question
 
 	const navigate = useNavigate();
-	const timerRef = useRef(null);
 
 	useEffect(() => {
-		// Fetch questions from the data file
 		const fetchQuestions = async () => {
 			const fetchedQuestions = questionsData;
 			setQuestions(fetchedQuestions);
@@ -28,25 +28,28 @@ function QuizPage() {
 
 		fetchQuestions();
 
-		// Start the countdown timer
-		timerRef.current = setInterval(() => {
+		const timerRef = setInterval(() => {
 			setTimeLeft((prevTime) => {
 				if (prevTime <= 1) {
-					clearInterval(timerRef.current);
+					clearInterval(timerRef);
 					setCompleted(true);
-					handleQuizCompletion(questions, transcripts);
+					handleQuizCompletion(questions, transcripts, timeTaken);
 					return 0;
 				}
 				return prevTime - 1;
 			});
 		}, 1000);
 
-		return () => clearInterval(timerRef.current);
+		return () => clearInterval(timerRef);
 	}, []);
 
 	const handleNext = (transcript, skipped) => {
+		const endTime = Date.now();
+		const timeSpent = (endTime - startTime) / 1000; // Time spent on the current question in seconds
+
 		const newStates = [...questionStates];
 		const newTranscripts = [...transcripts];
+		const newTimeTaken = [...timeTaken, timeSpent];
 
 		if (skipped) {
 			newStates[currentQuestion] = "skipped";
@@ -57,15 +60,16 @@ function QuizPage() {
 
 		setQuestionStates(newStates);
 		setTranscripts(newTranscripts);
+		setTimeTaken(newTimeTaken);
 		setIsRecording(false);
+		setStartTime(Date.now()); // Reset start time for the next question
 
 		if (currentQuestion < questions.length - 1) {
 			setCurrentQuestion(currentQuestion + 1);
 			newStates[currentQuestion + 1] = "current";
 		} else {
 			setCompleted(true);
-			handleQuizCompletion(questions, newTranscripts);
-			clearInterval(timerRef.current);
+			handleQuizCompletion(questions, newTranscripts, newTimeTaken);
 		}
 	};
 
@@ -77,8 +81,16 @@ function QuizPage() {
 		}
 	}, [currentQuestion, questions]);
 
-	const handleQuizCompletion = async (questions, answers) => {
+	const handleQuizCompletion = async (questions, answers, times) => {
 		try {
+			const logEntries = questions.map((q, index) => ({
+				question: q,
+				answer: answers[index],
+				timeTaken: times[index],
+			}));
+
+			console.log("Log entries:", logEntries);
+
 			const result = await submitQuiz(questions, answers);
 			navigate("/result", {
 				state: {
@@ -86,6 +98,7 @@ function QuizPage() {
 					questions: questions,
 					answers: answers,
 					timeLeft,
+					times,
 				},
 			});
 		} catch (error) {
@@ -97,19 +110,10 @@ function QuizPage() {
 		setCurrentQuestion(0);
 		setQuestionStates(Array(questions.length).fill("unattempted"));
 		setTranscripts(Array(questions.length).fill(""));
+		setTimeTaken([]);
 		setCompleted(false);
 		setTimeLeft(600);
-		timerRef.current = setInterval(() => {
-			setTimeLeft((prevTime) => {
-				if (prevTime <= 1) {
-					clearInterval(timerRef.current);
-					setCompleted(true);
-					handleQuizCompletion(questions, transcripts);
-					return 0;
-				}
-				return prevTime - 1;
-			});
-		}, 1000);
+		setStartTime(Date.now());
 	};
 
 	const handleRecordingStart = () => {
