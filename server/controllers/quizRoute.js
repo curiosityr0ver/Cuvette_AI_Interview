@@ -31,7 +31,8 @@ router.post('/batch', async (req, res) => {
 
 router.post('/dev', async (req, res) => {
     const { prompt, payload } = req.body;
-
+    console.log("Prompt:", prompt);
+    console.log("Payload:", payload);
     const newPayload = payload.map((pair) => {
         let { question, answer } = pair;
         if (answer.length < 10) {

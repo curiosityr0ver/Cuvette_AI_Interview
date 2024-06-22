@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useRef, useEffect, useState } from "react";
 import styles from "./Question.module.css";
 

@@ -95,7 +95,7 @@ function QuizPage() {
 			const result = await submitQuiz(questions, answers);
 			navigate("/result", {
 				state: {
-					result: result.data.answers,
+					result: result.data,
 					questions: questions,
 					answers: answers,
 					timeLeft,
