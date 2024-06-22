@@ -31,8 +31,17 @@ router.post('/batch', async (req, res) => {
 
 router.post('/dev', async (req, res) => {
     const { prompt, payload } = req.body;
-    const response = await generateContent(prompt, JSON.stringify(payload));
-    res.json({ response });
+
+    const newPayload = payload.map((pair) => {
+        let { question, answer } = pair;
+        if (answer.length < 10) {
+            answer = "skipped";
+        }
+        return { question, answer };
+    });
+
+    const response = await generateContent(prompt, JSON.stringify(newPayload));
+    res.json(response);
 });
 
 module.exports = router;
