@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Question from "./Question";
 import questionsData from "../data/questions";
@@ -12,8 +12,10 @@ function QuizPage() {
 	const [transcripts, setTranscripts] = useState([]);
 	const [completed, setCompleted] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
+	const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
 
 	const navigate = useNavigate();
+	const timerRef = useRef(null);
 
 	useEffect(() => {
 		// Fetch questions from the data file
@@ -25,6 +27,21 @@ function QuizPage() {
 		};
 
 		fetchQuestions();
+
+		// Start the countdown timer
+		timerRef.current = setInterval(() => {
+			setTimeLeft((prevTime) => {
+				if (prevTime <= 1) {
+					clearInterval(timerRef.current);
+					setCompleted(true);
+					handleQuizCompletion(questions, transcripts);
+					return 0;
+				}
+				return prevTime - 1;
+			});
+		}, 1000);
+
+		return () => clearInterval(timerRef.current);
 	}, []);
 
 	const handleNext = (transcript, skipped) => {
@@ -48,6 +65,7 @@ function QuizPage() {
 		} else {
 			setCompleted(true);
 			handleQuizCompletion(questions, newTranscripts);
+			clearInterval(timerRef.current);
 		}
 	};
 
@@ -67,6 +85,7 @@ function QuizPage() {
 					result: result.data.answers,
 					questions: questions,
 					answers: answers,
+					timeLeft,
 				},
 			});
 		} catch (error) {
@@ -79,6 +98,18 @@ function QuizPage() {
 		setQuestionStates(Array(questions.length).fill("unattempted"));
 		setTranscripts(Array(questions.length).fill(""));
 		setCompleted(false);
+		setTimeLeft(600);
+		timerRef.current = setInterval(() => {
+			setTimeLeft((prevTime) => {
+				if (prevTime <= 1) {
+					clearInterval(timerRef.current);
+					setCompleted(true);
+					handleQuizCompletion(questions, transcripts);
+					return 0;
+				}
+				return prevTime - 1;
+			});
+		}, 1000);
 	};
 
 	const handleRecordingStart = () => {
@@ -95,6 +126,12 @@ function QuizPage() {
 		setTranscripts(newTranscripts);
 	};
 
+	const formatTime = (seconds) => {
+		const minutes = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+	};
+
 	return (
 		<div className={styles.quizContainer}>
 			<h1 className={styles.title}>Quiz</h1>
@@ -106,6 +143,7 @@ function QuizPage() {
 					></span>
 				))}
 			</div>
+			<div className={styles.timer}>Time Left: {formatTime(timeLeft)}</div>
 			{!completed ? (
 				questions.length > 0 && (
 					<div>
