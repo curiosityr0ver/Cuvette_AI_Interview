@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useRef, useEffect, useState } from "react";
 import styles from "./Question.module.css";
 
@@ -13,37 +12,6 @@ function Question({
 }) {
 	const recognitionRef = useRef(null);
 	const [isRecognizing, setIsRecognizing] = useState(false);
-	const [startTime, setStartTime] = useState(null);
-	const [timeToSpeak, setTimeToSpeak] = useState(null);
-
-	const startRecording = () => {
-		if (recognitionRef.current) {
-			onRecordingStart();
-			recognitionRef.current.start();
-			setIsRecognizing(true);
-		}
-	};
-
-	const stopRecording = () => {
-		if (recognitionRef.current) {
-			recognitionRef.current.onend = null; // Temporarily remove the onend handler
-			recognitionRef.current.stop();
-			setIsRecognizing(false);
-			onRecordingStop();
-		}
-	};
-
-	const handleToggleRecording = () => {
-		if (isRecognizing) {
-			stopRecording();
-		} else {
-			startRecording();
-			const endTime = Date.now();
-			const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-			console.log(`Time taken before starting to speak: ${timeTaken} seconds`);
-			setTimeToSpeak(timeTaken);
-		}
-	};
 
 	useEffect(() => {
 		if (
@@ -71,24 +39,45 @@ function Question({
 
 		recognitionRef.current.onerror = (event) => {
 			console.error("Speech recognition error", event);
-			stopRecording();
+			setIsRecognizing(false);
+			onRecordingStop();
 		};
 
 		recognitionRef.current.onend = () => {
-			stopRecording();
+			setIsRecognizing(false);
+			onRecordingStop();
 		};
 
 		return () => {
 			if (recognitionRef.current) {
-				recognitionRef.current.stop();
+				recognitionRef.current.abort();
 				recognitionRef.current = null;
 			}
 		};
 	}, [setTranscript, onRecordingStop]);
 
-	useEffect(() => {
-		setStartTime(Date.now());
-	}, [question]);
+	const startRecording = () => {
+		if (recognitionRef.current) {
+			recognitionRef.current.start();
+			onRecordingStart();
+			setIsRecognizing(true);
+		}
+	};
+
+	const stopRecording = () => {
+		if (recognitionRef.current && isRecognizing) {
+			recognitionRef.current.stop();
+			setIsRecognizing(false);
+		}
+	};
+
+	const handleToggleRecording = () => {
+		if (isRecognizing) {
+			stopRecording();
+		} else {
+			startRecording();
+		}
+	};
 
 	return (
 		<div className={styles.questionContainer}>
@@ -97,10 +86,10 @@ function Question({
 				<button
 					onClick={handleToggleRecording}
 					className={`${styles.button} ${
-						isRecording ? styles.stopButton : styles.recordButton
+						isRecognizing ? styles.stopButton : styles.recordButton
 					}`}
 				>
-					{isRecording
+					{isRecognizing
 						? "Stop Recording"
 						: transcript
 						? "Re-record"
@@ -109,29 +98,20 @@ function Question({
 				{isRecognizing && <div className={styles.recordIndicator}></div>}
 			</div>
 			{transcript && !isRecognizing && (
-				<p className={styles.transcript}>
-					Transcript: {transcript} <br />
-					Time taken before speaking: {timeToSpeak} seconds
-				</p>
+				<p className={styles.transcript}>Transcript: {transcript}</p>
 			)}
 			<div className={styles.buttonContainer}>
 				<button
 					onClick={() => onNext(transcript, false)}
-					className={`${styles.button}
-						 ${styles.nextButton}
-						 ${!transcript || isRecognizing ? styles.disabled : ""}
-						 `}
-					// disabled={!transcript || isRecognizing}
+					className={`${styles.button} ${styles.nextButton}`}
+					disabled={isRecognizing}
 				>
 					Next
 				</button>
 				<button
 					onClick={() => onNext("", true)}
-					className={`${styles.button}
-						 ${styles.skipButton}
-						 ${!transcript || isRecognizing ? styles.disabled : ""}
-						 `}
-					// disabled={!transcript || isRecognizing}
+					className={`${styles.button} ${styles.skipButton}`}
+					disabled={isRecognizing}
 				>
 					Skip
 				</button>

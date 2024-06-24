@@ -15,12 +15,12 @@ const submitQuiz = async (questions, answers) => {
             return { question, answer: answers[index] };
         });
 
-        console.log('Submitting quiz:', questions, answers);
+        console.log('Submitting quiz');
         const response = await axios.post(`${SERVER_ORIGIN}/quiz/dev`, {
             prompt: "\nRate and review each of the answers on a scale of [1-10]\n\nUsing this JSON schema:\n\n  Ratings = {\"rating\": number, \n\"remark\": string }\n\nReturn a `list[Rating]`\n      ",
             payload: zipPairs,
         });
-        console.log('Submission successful:', response.data);
+        console.log('Submission successful:');
         return response;
     } catch (error) {
         console.error('Error submitting quiz:', error);

@@ -31,8 +31,9 @@ router.post('/batch', async (req, res) => {
 
 router.post('/dev', async (req, res) => {
     const { prompt, payload } = req.body;
-    console.log("Prompt:", prompt);
-    console.log("Payload:", payload);
+    console.log("************** loading dev **************  ");
+    // console.log("Prompt:", prompt);
+    // console.log("Payload:", payload);
     const newPayload = payload.map((pair) => {
         let { question, answer } = pair;
         if (answer.length < 10) {
@@ -42,6 +43,7 @@ router.post('/dev', async (req, res) => {
     });
 
     const response = await generateContent(prompt, JSON.stringify(newPayload));
+    console.log("Response:", response);
     res.json(response);
 });
 

@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Question from "./Question";
 import questionsData from "../data/questions";
 import submitQuiz from "../api/submitQuiz";
 import Footer from "./Footer";
@@ -17,6 +16,7 @@ function QuizPage() {
 	const [startTime, setStartTime] = useState(Date.now());
 	const [timeTaken, setTimeTaken] = useState([]); // Time taken for each question
 
+	const recognitionRef = useRef(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -43,6 +43,73 @@ function QuizPage() {
 
 		return () => clearInterval(timerRef);
 	}, []);
+
+	useEffect(() => {
+		if (
+			!("webkitSpeechRecognition" in window) &&
+			!("SpeechRecognition" in window)
+		) {
+			alert(
+				"Web Speech API is not supported by this browser. Please use Google Chrome."
+			);
+			return;
+		}
+
+		const SpeechRecognition =
+			window.webkitSpeechRecognition || window.SpeechRecognition;
+		recognitionRef.current = new SpeechRecognition();
+		recognitionRef.current.continuous = true;
+		recognitionRef.current.interimResults = false;
+		recognitionRef.current.lang = "en-US";
+
+		recognitionRef.current.onresult = (event) => {
+			const lastResult = event.results.length - 1;
+			const newTranscript = event.results[lastResult][0].transcript;
+			setTranscripts((prevTranscripts) => {
+				const newTranscripts = [...prevTranscripts];
+				newTranscripts[currentQuestion] = newTranscript;
+				return newTranscripts;
+			});
+		};
+
+		recognitionRef.current.onerror = (event) => {
+			console.error("Speech recognition error", event);
+			setIsRecording(false);
+		};
+
+		recognitionRef.current.onend = () => {
+			setIsRecording(false);
+		};
+
+		return () => {
+			if (recognitionRef.current) {
+				recognitionRef.current.abort();
+				recognitionRef.current = null;
+			}
+		};
+	}, [currentQuestion]);
+
+	const startRecording = () => {
+		if (recognitionRef.current) {
+			recognitionRef.current.start();
+			setIsRecording(true);
+		}
+	};
+
+	const stopRecording = () => {
+		if (recognitionRef.current && isRecording) {
+			recognitionRef.current.stop();
+			setIsRecording(false);
+		}
+	};
+
+	const handleToggleRecording = () => {
+		if (isRecording) {
+			stopRecording();
+		} else {
+			startRecording();
+		}
+	};
 
 	const handleNext = (transcript, skipped) => {
 		const endTime = Date.now();
@@ -74,14 +141,6 @@ function QuizPage() {
 		}
 	};
 
-	useEffect(() => {
-		if (questions.length > 0) {
-			const newStates = [...questionStates];
-			newStates[currentQuestion] = "current";
-			setQuestionStates(newStates);
-		}
-	}, [currentQuestion, questions]);
-
 	const handleQuizCompletion = async (questions, answers, times) => {
 		try {
 			const logEntries = questions.map((q, index) => ({
@@ -89,19 +148,22 @@ function QuizPage() {
 				answer: answers[index],
 				timeTaken: times[index],
 			}));
-
 			console.log("Log entries:", logEntries);
 
-			const result = await submitQuiz(questions, answers);
-			navigate("/result", {
-				state: {
-					result: result.data,
-					questions: questions,
-					answers: answers,
-					timeLeft,
-					times,
-				},
-			});
+			const response = await submitQuiz(questions, answers);
+			if (response.status === 200) {
+				const { data } = response;
+				console.log("Submission successful:", data);
+				navigate("/result", {
+					state: {
+						result: data,
+						questions: questions,
+						answers: answers,
+						timeLeft,
+						times,
+					},
+				});
+			}
 		} catch (error) {
 			console.error("Failed to submit quiz:", error);
 		}
@@ -115,20 +177,6 @@ function QuizPage() {
 		setCompleted(false);
 		setTimeLeft(600);
 		setStartTime(Date.now());
-	};
-
-	const handleRecordingStart = () => {
-		setIsRecording(true);
-	};
-
-	const handleRecordingStop = () => {
-		setIsRecording(false);
-	};
-
-	const handleTranscript = (transcript) => {
-		const newTranscripts = [...transcripts];
-		newTranscripts[currentQuestion] = transcript;
-		setTranscripts(newTranscripts);
 	};
 
 	const formatTime = (seconds) => {
@@ -152,17 +200,49 @@ function QuizPage() {
 			{!completed ? (
 				questions.length > 0 && (
 					<div>
-						<Question
-							key={currentQuestion} // Force re-render
-							question={questions[currentQuestion]}
-							onNext={handleNext}
-							questionIndex={currentQuestion}
-							transcript={transcripts[currentQuestion]}
-							setTranscript={handleTranscript}
-							onRecordingStart={handleRecordingStart}
-							onRecordingStop={handleRecordingStop}
-							isRecording={isRecording}
-						/>
+						<div className={styles.questionContainer}>
+							<h2 className={styles.questionText}>
+								{questions[currentQuestion]}
+							</h2>
+							<div className={styles.recordContainer}>
+								<button
+									onClick={handleToggleRecording}
+									className={`${styles.button} ${
+										isRecording ? styles.stopButton : styles.recordButton
+									}`}
+								>
+									{isRecording
+										? "Stop Recording"
+										: transcripts[currentQuestion]
+										? "Re-record"
+										: "Start Recording"}
+								</button>
+								{isRecording && <div className={styles.recordIndicator}></div>}
+							</div>
+							{transcripts[currentQuestion] && !isRecording && (
+								<p className={styles.transcript}>
+									Transcript: {transcripts[currentQuestion]}
+								</p>
+							)}
+							<div className={styles.buttonContainer}>
+								<button
+									onClick={() =>
+										handleNext(transcripts[currentQuestion], false)
+									}
+									className={`${styles.button} ${styles.nextButton}`}
+									disabled={isRecording}
+								>
+									Next
+								</button>
+								<button
+									onClick={() => handleNext("", true)}
+									className={`${styles.button} ${styles.skipButton}`}
+									disabled={isRecording}
+								>
+									Skip
+								</button>
+							</div>
+						</div>
 					</div>
 				)
 			) : (
