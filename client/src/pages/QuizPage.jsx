@@ -60,7 +60,7 @@ function QuizPage() {
 		recognitionRef.current = new SpeechRecognition();
 		recognitionRef.current.continuous = true;
 		recognitionRef.current.interimResults = false;
-		recognitionRef.current.lang = "en-IN";
+		recognitionRef.current.lang = "en-IN"; // Set language to en-IN
 
 		recognitionRef.current.onresult = (event) => {
 			const lastResult = event.results.length - 1;
@@ -148,22 +148,19 @@ function QuizPage() {
 				answer: answers[index],
 				timeTaken: times[index],
 			}));
+
 			console.log("Log entries:", logEntries);
 
-			const response = await submitQuiz(questions, answers);
-			if (response.status === 200) {
-				const { data } = response;
-				console.log("Submission successful:", data);
-				navigate("/result", {
-					state: {
-						result: data,
-						questions: questions,
-						answers: answers,
-						timeLeft,
-						times,
-					},
-				});
-			}
+			const result = await submitQuiz(questions, answers);
+			navigate("/result", {
+				state: {
+					result: result.data,
+					questions: questions,
+					answers: answers,
+					timeLeft,
+					times,
+				},
+			});
 		} catch (error) {
 			console.error("Failed to submit quiz:", error);
 		}
