@@ -121,7 +121,7 @@ function Question({
 						 ${styles.nextButton}
 						 ${!transcript || isRecognizing ? styles.disabled : ""}
 						 `}
-					disabled={!transcript || isRecognizing}
+					// disabled={!transcript || isRecognizing}
 				>
 					Next
 				</button>
@@ -131,7 +131,7 @@ function Question({
 						 ${styles.skipButton}
 						 ${!transcript || isRecognizing ? styles.disabled : ""}
 						 `}
-					disabled={!transcript || isRecognizing}
+					// disabled={!transcript || isRecognizing}
 				>
 					Skip
 				</button>

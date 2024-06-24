@@ -7,7 +7,6 @@ const SERVER_ORIGIN_DEV = "http://localhost:3000";
 
 
 const submitQuiz = async (questions, answers) => {
-    console.log(SERVER_ORIGIN);
     try {
         const zipPairs = questions.map((question, index) => {
             if (answers[index].length < 10) {
