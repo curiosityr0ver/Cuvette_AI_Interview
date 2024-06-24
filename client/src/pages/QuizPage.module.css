@@ -123,6 +123,13 @@
     background-color: #ffc107;
 }
 
+.submitButton {
+    background-color: #007bff;
+    font-size: 18px;
+    padding: 12px 24px;
+    margin: 20px;
+}
+
 .loadingContainer {
     display: flex;
     flex-direction: column;

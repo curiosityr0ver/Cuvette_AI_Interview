@@ -222,22 +222,41 @@ function QuizPage() {
 								</p>
 							)}
 							<div className={styles.buttonContainer}>
-								<button
-									onClick={() =>
-										handleNext(transcripts[currentQuestion], false)
-									}
-									className={`${styles.button} ${styles.nextButton}`}
-									disabled={isRecording}
-								>
-									Next
-								</button>
-								<button
-									onClick={() => handleNext("", true)}
-									className={`${styles.button} ${styles.skipButton}`}
-									disabled={isRecording}
-								>
-									Skip
-								</button>
+								{currentQuestion < questions.length - 1 ? (
+									<>
+										{transcripts[currentQuestion] ? (
+											<button
+												onClick={() =>
+													handleNext(transcripts[currentQuestion], false)
+												}
+												className={`${styles.button} ${styles.nextButton}`}
+												disabled={isRecording}
+											>
+												Next
+											</button>
+										) : null}
+										<button
+											onClick={() => handleNext("", true)}
+											className={`${styles.button} ${styles.skipButton}`}
+											disabled={isRecording}
+										>
+											Skip
+										</button>
+									</>
+								) : (
+									<button
+										onClick={() =>
+											handleNext(
+												transcripts[currentQuestion] || "",
+												!transcripts[currentQuestion]
+											)
+										}
+										className={`${styles.button} ${styles.submitButton}`}
+										disabled={isRecording}
+									>
+										Submit Quiz
+									</button>
+								)}
 							</div>
 						</div>
 					</div>

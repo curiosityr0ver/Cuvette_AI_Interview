@@ -39,28 +39,28 @@ const ResultPage = () => {
 		<div className={styles.container}>
 			<h1 className={styles.title}>Quiz Results</h1>
 			<div className={styles.resultContainer}>
-				<h2 className={styles.subtitle}>Your Answers:</h2>
-				<ul className={styles.resultList}>
-					{result?.map((res, index) => (
-						<li
-							key={index}
-							className={`${styles.resultItem} ${getColorForRating(res)}`}
-						>
-							<h3 className={styles.questionTitle}>Question:</h3>
-							<p className={styles.question}>{questions[index]}</p>
-							<h3 className={styles.answerTitle}>Your Answer:</h3>
-							<p className={styles.answer}>{answers[index]}</p>
-							<h3 className={styles.ratingTitle}>Rating:</h3>
-							<p className={styles.rating}>{res.rating}/10</p>
-							<h3 className={styles.remarkTitle}>Remark:</h3>
-							<p className={styles.remark}>{res.remark}</p>
-							<h3 className={styles.timeTitle}>Time Taken:</h3>
-							<p className={styles.time}>
-								{(times[index] / 1000).toFixed(2)} seconds
-							</p>
-						</li>
-					))}
-				</ul>
+				<table className={styles.resultTable}>
+					<thead>
+						<tr>
+							<th>Question</th>
+							<th>Your Answer</th>
+							<th>Rating</th>
+							<th>Remark</th>
+							<th>Time Taken (s)</th>
+						</tr>
+					</thead>
+					<tbody>
+						{result?.map((res, index) => (
+							<tr key={index} className={getColorForRating(res.rating)}>
+								<td>{questions[index]}</td>
+								<td>{answers[index]}</td>
+								<td>{res.rating}/10</td>
+								<td>{res.remark}</td>
+								<td>{(times[index] / 1000).toFixed(2)}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			</div>
 			<button onClick={handleBackToHome} className={styles.button}>
 				Back to Home

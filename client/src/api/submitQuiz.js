@@ -16,7 +16,7 @@ const submitQuiz = async (questions, answers) => {
         });
 
         console.log('Submitting quiz');
-        const response = await axios.post(`${SERVER_ORIGIN}/quiz/dev`, {
+        const response = await axios.post(`${SERVER_ORIGIN_DEV}/quiz/dev`, {
             prompt: "\nRate and review each of the answers on a scale of [1-10]\n\nUsing this JSON schema:\n\n  Ratings = {\"rating\": number, \n\"remark\": string }\n\nReturn a `list[Rating]`\n      ",
             payload: zipPairs,
         });
