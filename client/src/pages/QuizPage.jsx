@@ -60,7 +60,7 @@ function QuizPage() {
 		recognitionRef.current = new SpeechRecognition();
 		recognitionRef.current.continuous = true;
 		recognitionRef.current.interimResults = false;
-		recognitionRef.current.lang = "en-US";
+		recognitionRef.current.lang = "en-IN";
 
 		recognitionRef.current.onresult = (event) => {
 			const lastResult = event.results.length - 1;
